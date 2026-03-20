@@ -65,6 +65,14 @@ Scenarios: Auth, DM, Search, Crok, Post
 - TBT x25, INP x25
 - Only scored if Display >= 300 points
 
+## Git/PR Workflow
+- Feature branch → Fork内PR → mainにマージ → upstream PR #12 に自動反映
+- PR本文に `Closes #X` を含めてissueを自動クローズする
+- upstream PR #12 の説明文を更新（Merged/TODOセクション）
+- PR作成後、変更行に公式ドキュメントのリンク+引用テキストをレビューコメントで追加する
+  - 形式: `📖 [設定名](公式URL) - 引用テキスト`
+  - 例: `📖 [mode](https://webpack.js.org/configuration/mode/) - "production" enables built-in optimizations`
+
 ## Regulations (MUST follow)
 - `fly.toml` MUST NOT be modified
 - VRT tests MUST pass (3% pixel tolerance)

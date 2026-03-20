@@ -25,7 +25,7 @@ app.use(sessionMiddleware);
 app.use(bodyParser.json());
 app.use(bodyParser.raw({ limit: "10mb" }));
 
-// API レスポンスはキャッシュさせない
+// ブラウザのヒューリスティックキャッシュで古いデータが返されないよう、API レスポンスはキャッシュさせない
 app.use("/api/v1", (_req, res, next) => {
   res.setHeader("Cache-Control", "no-store");
   return next();
