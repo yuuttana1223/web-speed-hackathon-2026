@@ -10,10 +10,24 @@ export const app = Express();
 
 app.set("trust proxy", true);
 
-app.use(compression());
+app.use(
+  compression({
+    filter(req, res) {
+      // SSE はストリーミングなので圧縮しない（バッファリングで遅延する）
+      if (res.getHeader("Content-Type") === "text/event-stream") {
+        return false;
+      }
+      return compression.filter(req, res);
+    },
+  }),
+);
 app.use(sessionMiddleware);
 app.use(bodyParser.json());
 app.use(bodyParser.raw({ limit: "10mb" }));
 
-app.use("/api/v1", apiRouter);
+// API レスポンスはキャッシュさせない
+app.use("/api/v1", (_req, res, next) => {
+  res.setHeader("Cache-Control", "no-store");
+  return next();
+}, apiRouter);
 app.use(staticRouter);
