@@ -5,7 +5,8 @@
   "author": "CyberAgent, Inc.",
   "type": "module",
   "scripts": {
-    "build": "pnpm --filter @web-speed-hackathon-2026/client build",
+    "optimize": "node scripts/optimize-assets.mjs",
+    "build": "pnpm run optimize && pnpm --filter @web-speed-hackathon-2026/client build",
     "start": "pnpm --filter @web-speed-hackathon-2026/server start",
     "typecheck": "pnpm run --recursive typecheck",
     "format": "pnpm run format:oxlint && pnpm run format:oxfmt",
@@ -14,10 +15,14 @@
   },
   "devDependencies": {
     "oxfmt": "0.36.0",
-    "oxlint": "1.43.0"
+    "oxlint": "1.43.0",
+    "sharp": "0.34.5"
   },
   "engines": {
     "node": "24.14.0"
   },
-  "packageManager": "pnpm@10.32.1"
+  "packageManager": "pnpm@10.32.1",
+  "pnpm": {
+    "onlyBuiltDependencies": ["sharp", "sqlite3"]
+  }
 }
