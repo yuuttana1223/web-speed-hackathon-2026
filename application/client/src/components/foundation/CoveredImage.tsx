@@ -1,12 +1,12 @@
-import classNames from "classnames";
-import sizeOf from "image-size";
-import { load, ImageIFD } from "piexifjs";
-import { MouseEvent, RefCallback, useCallback, useId, useMemo, useState } from "react";
+import { MouseEvent, useCallback, useId } from "react";
 
 import { Button } from "@web-speed-hackathon-2026/client/src/components/foundation/Button";
 import { Modal } from "@web-speed-hackathon-2026/client/src/components/modal/Modal";
-import { useFetch } from "@web-speed-hackathon-2026/client/src/hooks/use_fetch";
-import { fetchBinary } from "@web-speed-hackathon-2026/client/src/utils/fetchers";
+
+// @ts-expect-error -- JSON import
+import manifest from "../../../../public/images/manifest.json";
+
+const imageManifest = manifest as Record<string, { width: number; height: number; alt: string }>;
 
 interface Props {
   src: string;
@@ -22,49 +22,20 @@ export const CoveredImage = ({ src }: Props) => {
     ev.stopPropagation();
   }, []);
 
-  const { data, isLoading } = useFetch(src, fetchBinary);
-
-  const imageSize = useMemo(() => {
-    return data != null ? sizeOf(Buffer.from(data)) : { height: 0, width: 0 };
-  }, [data]);
-
-  const alt = useMemo(() => {
-    const exif = data != null ? load(Buffer.from(data).toString("binary")) : null;
-    const raw = exif?.["0th"]?.[ImageIFD.ImageDescription];
-    return raw != null ? new TextDecoder().decode(Buffer.from(raw, "binary")) : "";
-  }, [data]);
-
-  const blobUrl = useMemo(() => {
-    return data != null ? URL.createObjectURL(new Blob([data])) : null;
-  }, [data]);
-
-  const [containerSize, setContainerSize] = useState({ height: 0, width: 0 });
-  const callbackRef = useCallback<RefCallback<HTMLDivElement>>((el) => {
-    setContainerSize({
-      height: el?.clientHeight ?? 0,
-      width: el?.clientWidth ?? 0,
-    });
-  }, []);
-
-  if (isLoading || data === null || blobUrl === null) {
-    return null;
-  }
-
-  const containerRatio = containerSize.height / containerSize.width;
-  const imageRatio = imageSize?.height / imageSize?.width;
+  // Extract image ID from src path (e.g. "/images/abc123.webp" -> "abc123")
+  const imageId = src.replace(/^\/images\//, "").replace(/\.\w+$/, "");
+  const meta = imageManifest[imageId];
+  const alt = meta?.alt ?? "";
 
   return (
-    <div ref={callbackRef} className="relative h-full w-full overflow-hidden">
+    <div className="relative h-full w-full overflow-hidden">
       <img
         alt={alt}
-        className={classNames(
-          "absolute left-1/2 top-1/2 max-w-none -translate-x-1/2 -translate-y-1/2",
-          {
-            "w-auto h-full": containerRatio > imageRatio,
-            "w-full h-auto": containerRatio <= imageRatio,
-          },
-        )}
-        src={blobUrl}
+        className="absolute left-1/2 top-1/2 h-full w-full max-w-none -translate-x-1/2 -translate-y-1/2 object-cover"
+        height={meta?.height}
+        loading="lazy"
+        src={src}
+        width={meta?.width}
       />
 
       <button
