@@ -112,15 +112,16 @@ export const DirectMessageContainer = ({ activeUser, authModalId }: Props) => {
     );
   }
 
-  if (conversation == null) {
-    if (conversationError != null) {
-      return <NotFoundContainer />;
-    }
+  if (conversationError !== null) {
+    return <NotFoundContainer />;
+  }
+
+  if (conversation === null) {
     return null;
   }
 
   const peer =
-    conversation.initiator.id !== activeUser?.id ? conversation.initiator : conversation.member;
+    conversation.initiator.id !== activeUser.id ? conversation.initiator : conversation.member;
 
   return (
     <>

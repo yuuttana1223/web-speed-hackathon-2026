@@ -19,24 +19,20 @@ const PostContainerContent = ({ postId }: { postId: string | undefined }) => {
     fetchJSON,
   );
 
-  if (isLoadingPost) {
-    return (
-      <Helmet>
-        <title>読込中 - CaX</title>
-      </Helmet>
-    );
-  }
-
-  if (post === null) {
+  if (!isLoadingPost && post === null) {
     return <NotFoundContainer />;
   }
 
   return (
     <InfiniteScroll fetchMore={fetchMore} items={comments}>
-      <Helmet>
-        <title>{post.user.name} さんのつぶやき - CaX</title>
-      </Helmet>
-      <PostPage comments={comments} post={post} />
+      {post !== null && (
+        <>
+          <Helmet>
+            <title>{post.user.name} さんのつぶやき - CaX</title>
+          </Helmet>
+          <PostPage comments={comments} post={post} />
+        </>
+      )}
     </InfiniteScroll>
   );
 };

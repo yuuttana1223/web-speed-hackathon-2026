@@ -20,24 +20,20 @@ export const UserProfileContainer = () => {
     fetchJSON,
   );
 
-  if (isLoadingUser) {
-    return (
-      <Helmet>
-        <title>読込中 - CaX</title>
-      </Helmet>
-    );
-  }
-
-  if (user === null) {
+  if (!isLoadingUser && user === null) {
     return <NotFoundContainer />;
   }
 
   return (
     <InfiniteScroll fetchMore={fetchMore} items={posts}>
-      <Helmet>
-        <title>{user.name} さんのタイムライン - CaX</title>
-      </Helmet>
-      <UserProfilePage timeline={posts} user={user} />
+      {user !== null && (
+        <>
+          <Helmet>
+            <title>{user.name} さんのタイムライン - CaX</title>
+          </Helmet>
+          <UserProfilePage timeline={posts} user={user} />
+        </>
+      )}
     </InfiniteScroll>
   );
 };
